@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
-    public List<Task> getTasks();
+    public List<Task> getTasks(); // по умолчанию в interface методы public можно не указывать
     public List<SubTask> getSubTasks();
     public List<Epic> getEpics();
     public void removeAllTasks();

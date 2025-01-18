@@ -62,26 +62,26 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTask(long id) {
+    public Task getTask(long id) { // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить 
        historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
 
-    @Override
-    public SubTask getSubtask(long id) {
+    @Override 
+    public SubTask getSubtask(long id) {  // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить 
         historyManager.add(subTasks.get(id));
         return subTasks.get(id);
     }
 
     @Override
-    public Epic getEpic(long id) {
+    public Epic getEpic(long id) {  // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить 
         historyManager.add(epics.get(id));
         return epics.get(id);
     }
 
     @Override
     public void addTask(Task task) {
-      //  task.setID(generateID());
+      //  task.setID(generateID());  // почему закомментировал? в итоговом коде не должны быть закомментированные строки, если не нужны удаляй 
         tasks.put(task.getID(), task);
     }
 
@@ -100,21 +100,24 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task newTask) {
-        if (tasks.containsKey(newTask.getID())) {
+        if (tasks.containsKey(newTask.getID())) { // можно улучшить читаемость если Boolean isTaskExist =  tasks.containsKey(newTask.getID())
+      //if (isTaskExist)
             tasks.put(newTask.getID(), newTask);
         }
     }
 
     @Override
     public void updateSubtask(SubTask newSubTask) {
-        if (subTasks.containsKey(newSubTask.getID())) {
+        if (subTasks.containsKey(newSubTask.getID())) {// можно улучшить читаемость если Boolean isTaskExist =  tasks.containsKey(newTask.getID())
+      //if (isTaskExist)
             subTasks.put(newSubTask.getID(), newSubTask);
         }
     }
 
     @Override
     public void updateEpic(Epic newEpic) {
-        if (epics.containsKey(newEpic.getID())) {
+        if (epics.containsKey(newEpic.getID())) {// можно улучшить читаемость если Boolean isTaskExist =  tasks.containsKey(newTask.getID())
+      //if (isTaskExist)
             epics.put(newEpic.getID(), newEpic);
         }
     }
@@ -176,7 +179,7 @@ public class InMemoryTaskManager implements TaskManager {
                 isNew = true;
             }
         }
-        if (isDone) {
+        if (isDone) { // молодец, вынесение результата выражения в отдельную переменную и ее использование в if улучшает читаемость 
             epic.setStatus(TaskStatus.DONE);
         } else if (isNew) {
             epic.setStatus(TaskStatus.NEW);
