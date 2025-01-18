@@ -2,17 +2,15 @@ package manager;
 
 import Task.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.crypto.spec.OAEPParameterSpec;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     public HistoryManager historyManager = Managers.getDefaultHistory();
     static long ID = 1;
-    private  Map<Long, Task> tasks = new HashMap<>();
-    private  Map<Long, SubTask> subTasks = new HashMap<>();
-    private  Map<Long, Epic> epics = new HashMap<>();
+    private Map<Long, Task> tasks = new HashMap<>();
+    private Map<Long, SubTask> subTasks = new HashMap<>();
+    private Map<Long, Epic> epics = new HashMap<>();
 
     public static long generateID() {
         return ID++;
@@ -62,63 +60,64 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTask(long id) { // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить 
-       historyManager.add(tasks.get(id));
-        return tasks.get(id);
-    }
-
-    @Override 
-    public SubTask getSubtask(long id) {  // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить 
-        historyManager.add(subTasks.get(id));
-        return subTasks.get(id);
+    public Optional<Task> getTask(long id) { // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить
+        Task task = tasks.get(id);
+        historyManager.add(task);
+        return Optional.ofNullable(task);
     }
 
     @Override
-    public Epic getEpic(long id) {  // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить 
-        historyManager.add(epics.get(id));
-        return epics.get(id);
+    public Optional<SubTask> getSubtask(long id) {  // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить
+        SubTask subTask = subTasks.get(id);
+        historyManager.add(subTask);
+        return Optional.ofNullable(subTask);
+    }
+
+    @Override
+    public Optional<Epic> getEpic(long id) {  // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить
+        Epic epic = epics.get(id);
+        historyManager.add(epic);
+        return Optional.ofNullable(epic);
     }
 
     @Override
     public void addTask(Task task) {
-      //  task.setID(generateID());  // почему закомментировал? в итоговом коде не должны быть закомментированные строки, если не нужны удаляй 
+        // почему закомментировал? в итоговом коде не должны быть закомментированные строки, если не нужны удаляй
         tasks.put(task.getID(), task);
     }
 
     @Override
     public void addSubTask(SubTask subTask) {
-      //  subTask.setID(generateID());
         subTasks.put(subTask.getID(), subTask);
         epics.get(subTask.getEpicID()).addSubTask(subTask);
     }
 
     @Override
     public void addEpic(Epic epic) {
-       // epic.setID(generateID());
         epics.put(epic.getID(), epic);
     }
 
     @Override
     public void updateTask(Task newTask) {
-        if (tasks.containsKey(newTask.getID())) { // можно улучшить читаемость если Boolean isTaskExist =  tasks.containsKey(newTask.getID())
-      //if (isTaskExist)
+        boolean isTaskExist = tasks.containsKey(newTask.getID());
+        if (isTaskExist) {
             tasks.put(newTask.getID(), newTask);
         }
     }
 
     @Override
-    public void updateSubtask(SubTask newSubTask) {
-        if (subTasks.containsKey(newSubTask.getID())) {// можно улучшить читаемость если Boolean isTaskExist =  tasks.containsKey(newTask.getID())
-      //if (isTaskExist)
-            subTasks.put(newSubTask.getID(), newSubTask);
+    public void updateSubtask(SubTask newTask) {
+        boolean isTaskExist = tasks.containsKey(newTask.getID());
+        if (isTaskExist) {
+            subTasks.put(newTask.getID(), newTask);
         }
     }
 
     @Override
-    public void updateEpic(Epic newEpic) {
-        if (epics.containsKey(newEpic.getID())) {// можно улучшить читаемость если Boolean isTaskExist =  tasks.containsKey(newTask.getID())
-      //if (isTaskExist)
-            epics.put(newEpic.getID(), newEpic);
+    public void updateEpic(Epic newTask) {
+        boolean isTaskExist = tasks.containsKey(newTask.getID());
+        if (isTaskExist) { // можно улучшить читаемость если Boolean isTaskExist =  tasks.containsKey(newTask.getID())
+            epics.put(newTask.getID(), newTask);
         }
     }
 
@@ -138,12 +137,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeEpic(long id) {
-       Epic epic= epics.remove(id);
+        Epic epic = epics.remove(id);
         historyManager.remove(id);
         if (epic == null) return;
 
         for (Long ID : epic.getSubtaskId()) {
-             removeSubTask(ID);
+            removeSubTask(ID);
         }
     }
 
