@@ -1,7 +1,8 @@
-package Task;
+package main.Task;
 
-import manager.InMemoryHistoryManager;
-import manager.InMemoryTaskManager;
+import main.manager.InMemoryTaskManager;
+
+import java.util.Objects;
 
 public class Task {
     private String name;
@@ -16,11 +17,11 @@ public class Task {
         ID = InMemoryTaskManager.generateID();
     }
 
-    public Task(String name, String description, long ID, String status) {
+    public Task(String name, String description, long ID, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.ID = ID;
-        setStatus(status);
+        this.status = status;
     }
 
     public String getName() {
@@ -59,23 +60,23 @@ public class Task {
         this.status = status;
     }
 
-    public void setStatus(String str) {
-        switch (str) {
-            case "NEW" :
-                status = TaskStatus.NEW;
-                break;
-            case "IN_PROGRESS":
-                status = TaskStatus.IN_PROGRESS;
-                break;
-            case "DONE" :
-                status = TaskStatus.DONE;
-                break;
-        }
-    }
 
     @Override
     public String toString() {
-        return "name = "+ name+" | "+
-                "description = "+description+ " | ID "+ID +"\n";
+        return "name = " + name + " | " +
+                "description = " + description + " | ID " + ID + "\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return ID == task.ID && Objects.equals(name, task.name) && Objects.equals(description, task.description) && status == task.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, ID, status);
     }
 }

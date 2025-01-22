@@ -1,6 +1,6 @@
-package manager;
+package main.manager;
 
-import Task.*;
+import main.Task.*;
 
 import java.io.*;
 import java.util.*;
@@ -40,13 +40,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
                 if (p[1].equals(TaskType.TASK.toString())) {
-                    Task task = new Task(p[2], p[4], Long.parseLong(p[0]), p[3]);
+                    Task task = new Task(p[2], p[4], Long.parseLong(p[0]), TaskStatus.valueOf(p[3]));
                     tasks.put(task.getID(), task);
                 } else if (p[1].equals(TaskType.SUBTASK.toString())) {
-                    SubTask subTask = new SubTask(p[2], p[4], Long.parseLong(p[0]), p[3], Long.parseLong(p[5]));
+                    SubTask subTask = new SubTask(p[2], p[4], Long.parseLong(p[0]),TaskStatus.valueOf(p[3]), Long.parseLong(p[5]));
                     subTasks.put(subTask.getID(), subTask);
                 } else if (p[1].equals(TaskType.EPIC.toString())) {
-                    Epic epic = new Epic(p[2], p[4], Long.parseLong(p[0]), p[3]);
+                    Epic epic = new Epic(p[2], p[4], Long.parseLong(p[0]), TaskStatus.valueOf(p[3]));
                     epics.put(epic.getID(), epic);
                 }
                 for (Epic epic : epics.values()) {
@@ -101,8 +101,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(SubTask newSubTask) {
-        super.updateSubtask(newSubTask);
+    public void updateSubTask(SubTask newSubTask) {
+        super.updateSubTask(newSubTask);
         save();
     }
 
@@ -136,7 +136,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         builder.append("\n");
         List<Task> history = super.getHistory();
-        System.out.println("H " + history);
         for (Task task : history) {
             builder.append(task.getID() + ",");
         }
@@ -169,8 +168,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Optional<SubTask> getSubtask(long id) {
-        Optional<SubTask> subTask = super.getSubtask(id);
+    public Optional<SubTask> getSubTask(long id) {
+        Optional<SubTask> subTask = super.getSubTask(id);
         save();
         return subTask;
     }
@@ -182,5 +181,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return epic;
     }
 
+    @Override
+    public void removeAllTasks() {
+        super.removeAllTasks();
+        save();
+    }
 
+    @Override
+    public void removeAllSubtasks() {
+        super.removeAllSubtasks();
+        save();
+    }
+
+    @Override
+    public void removeAllEpics() {
+        super.removeAllEpics();
+        save();
+    }
 }

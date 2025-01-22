@@ -1,6 +1,6 @@
-package manager;
+package main.manager;
 
-import Task.Task;
+import main.Task.Task;
 
 public class Node  {
   private   Task task;

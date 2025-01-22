@@ -1,8 +1,10 @@
-package manager;
+package main.manager;
 
-import Task.*;
+import main.Task.Epic;
+import main.Task.SubTask;
+import main.Task.Task;
+import main.Task.TaskStatus;
 
-import javax.crypto.spec.OAEPParameterSpec;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -67,7 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Optional<SubTask> getSubtask(long id) {  // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить
+    public Optional<SubTask> getSubTask(long id) {  // хорошая практика возврщать из хранилища сущность завернутую в Optional скину статьи почитай применить
         SubTask subTask = subTasks.get(id);
         historyManager.add(subTask);
         return Optional.ofNullable(subTask);
@@ -89,6 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubTask(SubTask subTask) {
         subTasks.put(subTask.getID(), subTask);
+        if (epics.get(subTask.getEpicID())!=null)
         epics.get(subTask.getEpicID()).addSubTask(subTask);
     }
 
@@ -106,7 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(SubTask newTask) {
+    public void updateSubTask(SubTask newTask) {
         boolean isTaskExist = tasks.containsKey(newTask.getID());
         if (isTaskExist) {
             subTasks.put(newTask.getID(), newTask);
@@ -141,13 +144,13 @@ public class InMemoryTaskManager implements TaskManager {
         historyManager.remove(id);
         if (epic == null) return;
 
-        for (Long ID : epic.getSubtaskId()) {
+        for (Long ID : epic.getSubTasks()) {
             removeSubTask(ID);
         }
     }
 
     @Override
-    public List<SubTask> getSubtasksWithEpicID(long id) {
+    public List<SubTask> getSubTasksWithEpicID(long id) {
         ArrayList<SubTask> sub = new ArrayList<>();
         for (SubTask a : subTasks.values()) {
             if (a.getEpicID() == id)
@@ -195,5 +198,4 @@ public class InMemoryTaskManager implements TaskManager {
     public void addToHistory(Task task) {
         historyManager.add(task);
     }
-
 }

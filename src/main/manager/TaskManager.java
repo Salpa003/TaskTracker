@@ -1,8 +1,9 @@
-package manager;
+package main.manager;
 
-import Task.*;
+import main.Task.Epic;
+import main.Task.SubTask;
+import main.Task.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,18 +15,18 @@ public interface TaskManager {
      void removeAllSubtasks();
      void removeAllEpics();
      Optional<Task> getTask(long id);
-     Optional<SubTask> getSubtask(long id);
+     Optional<SubTask> getSubTask(long id);
      Optional<Epic> getEpic(long id);
      void addTask(Task task);
      void addSubTask(SubTask subTask);
      void addEpic(Epic epic);
      void updateTask(Task newTask);
-     void updateSubtask(SubTask newSubTask);
+     void updateSubTask(SubTask newSubTask);
      void updateEpic(Epic newEpic);
      void removeTask(long id);
      void removeSubTask(long id);
      void removeEpic(long id);
-     List<SubTask> getSubtasksWithEpicID(long id);
+     List<SubTask> getSubTasksWithEpicID(long id);
      void updateEpicStatus(Epic epic);
      List<Task> getHistory();
 }

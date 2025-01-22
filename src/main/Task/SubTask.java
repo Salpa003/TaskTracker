@@ -1,4 +1,4 @@
-package Task;
+package main.Task;
 
 public class SubTask extends Task{
     long epicID;
@@ -7,7 +7,7 @@ public class SubTask extends Task{
         this.epicID = epicID;
     }
 
-    public SubTask(String name, String description, long ID, String status, long epicID) {
+    public SubTask(String name, String description, long ID, TaskStatus status, long epicID) {
         super(name, description, ID, status);
         this.epicID = epicID;
     }
