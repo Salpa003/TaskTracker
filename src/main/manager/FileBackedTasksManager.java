@@ -16,12 +16,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Map<Long, SubTask> subTasks = new HashMap<>();
         Map<Long, Epic> epics = new HashMap<>();
 
-        try (Reader reader = new FileReader(file); BufferedReader bufferedReader = new BufferedReader(reader)) {
+        try (Reader reader = new FileReader(file);
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
             bufferedReader.readLine();
             while (bufferedReader.ready()) {
                 String line = bufferedReader.readLine();
                 String[] p = line.split(",");
-                if (line.isBlank()) continue;
+                if (line.isBlank()||p.length<=1)
+                    continue;
                 if (!(p[1].equals(TaskType.TASK.toString())
                         || p[1].equals(TaskType.SUBTASK.toString())
                         || p[1].equals(TaskType.EPIC.toString()))) {
@@ -79,18 +81,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void addTask(Task task) {
         super.addTask(task);
+        super.addToHistory(task);
         save();
     }
 
     @Override
     public void addSubTask(SubTask subTask) {
         super.addSubTask(subTask);
+        super.addToHistory(subTask);
         save();
     }
 
     @Override
     public void addEpic(Epic epic) {
         super.addEpic(epic);
+        super.addToHistory(epic);
         save();
     }
 
@@ -137,8 +142,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         builder.append("\n");
         List<Task> history = super.getHistory();
         for (Task task : history) {
-            builder.append(task.getID() + ",");
+            builder.append(task.getID()).append(",");
         }
+        builder.delete(builder.length()-1,builder.length());
         return builder.toString();
     }
 

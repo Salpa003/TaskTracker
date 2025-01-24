@@ -1,4 +1,4 @@
-package test;
+package test.manager;
 
 import main.Task.Epic;
 import main.Task.SubTask;
@@ -28,7 +28,7 @@ class TaskManagerTest {
         } catch (IOException e) {
             System.out.println("Error");
         }
-        taskManager = Managers.getFileBackedManager();
+        taskManager = Managers.getDefault();
     }
 
     @Test
