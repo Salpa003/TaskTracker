@@ -1,17 +1,18 @@
 package main.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Epic extends Task {
-    List<Long> subTasks = new ArrayList<>();
+    Map<Long, SubTask> subTasks = new HashMap<>();
 
-    public Epic (String name, String description) {
-        super(name,description);
+    public Epic(String name, String description, LocalDateTime startTime, Duration duration) {
+        super(name, description, startTime, duration);
     }
-
-    public Epic(String name, String description, long ID, TaskStatus status) {
-        super(name, description, ID, status);
+    public Epic(String name, String description, LocalDateTime startTime, Duration duration, LocalDateTime endTime, long ID, TaskStatus status) {
+        super(name, description, startTime, duration, endTime, ID, status);
     }
 
     @Override
@@ -20,7 +21,13 @@ public class Epic extends Task {
     }
 
     public void addSubTask(SubTask subTask) {
-        subTasks.add(subTask.getID());
+        subTasks.put(subTask.getID(), subTask);
+        updateTimes();
+    }
+
+    public void removeSubTask(Long id) {
+        if (subTasks.remove(id) != null)
+            updateTimes();
     }
 
     @Override
@@ -28,7 +35,25 @@ public class Epic extends Task {
         return TaskType.EPIC;
     }
 
-    public List<Long> getSubTasks() {
+    public Map<Long, SubTask> getSubTasks() {
         return subTasks;
+    }
+
+    public void updateTimes() {
+        Duration duration = Duration.ZERO;
+        SubTask beforeTask = new SubTask("ST1", "D", LocalDateTime.MAX, Duration.ZERO, 1);
+        SubTask afterTask = new SubTask("ST2", "D", LocalDateTime.MIN, Duration.ZERO, 2);
+        for (SubTask subTask : subTasks.values()) {
+            duration = duration.plus(subTask.getDuration());
+            if (subTask.getStartTime().isBefore(beforeTask.getStartTime())) {
+                beforeTask = subTask;
+            }
+            if (subTask.getEndTime().isAfter(afterTask.getEndTime())) {
+                afterTask = subTask;
+            }
+        }
+        this.setStartTime(beforeTask.getStartTime());
+        this.setDuration(duration);
+        this.setEndTime(afterTask.getEndTime().plus(afterTask.getDuration()));
     }
 }

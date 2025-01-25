@@ -3,6 +3,9 @@ package main.manager;
 import main.Task.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -22,7 +25,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             while (bufferedReader.ready()) {
                 String line = bufferedReader.readLine();
                 String[] p = line.split(",");
-                if (line.isBlank()||p.length<=1)
+                if (line.isBlank() || p.length <= 1)
                     continue;
                 if (!(p[1].equals(TaskType.TASK.toString())
                         || p[1].equals(TaskType.SUBTASK.toString())
@@ -42,13 +45,25 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
                 if (p[1].equals(TaskType.TASK.toString())) {
-                    Task task = new Task(p[2], p[4], Long.parseLong(p[0]), TaskStatus.valueOf(p[3]));
+                    Task task = new Task(p[2], p[4], LocalDateTime.parse(p[5],
+                            DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                            Duration.ofSeconds(Long.parseLong(p[6].substring(0,p[6].length()-1))), LocalDateTime.parse(p[7],
+                            DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                            Long.parseLong(p[0]), TaskStatus.valueOf(p[3]));
                     tasks.put(task.getID(), task);
                 } else if (p[1].equals(TaskType.SUBTASK.toString())) {
-                    SubTask subTask = new SubTask(p[2], p[4], Long.parseLong(p[0]),TaskStatus.valueOf(p[3]), Long.parseLong(p[5]));
+                    SubTask subTask = new SubTask(p[2], p[4], LocalDateTime.parse(p[5],
+                            DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                            Duration.ofSeconds(Long.parseLong(p[6].substring(0,p[6].length()-1))), LocalDateTime.parse(p[7],
+                            DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                            Long.parseLong(p[0]), TaskStatus.valueOf(p[3]), Long.parseLong(p[8]));
                     subTasks.put(subTask.getID(), subTask);
                 } else if (p[1].equals(TaskType.EPIC.toString())) {
-                    Epic epic = new Epic(p[2], p[4], Long.parseLong(p[0]), TaskStatus.valueOf(p[3]));
+                    Epic epic = new Epic(p[2], p[4], LocalDateTime.parse(p[5],
+                            DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                            Duration.ofSeconds(Long.parseLong(p[6].substring(0,p[6].length()-1))), LocalDateTime.parse(p[7],
+                            DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                            Long.parseLong(p[0]), TaskStatus.valueOf(p[3]));
                     epics.put(epic.getID(), epic);
                 }
                 for (Epic epic : epics.values()) {
@@ -125,7 +140,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private String ObjectToStringOfCSV() {
         StringBuilder builder = new StringBuilder();
-        builder.append("id,type,name,status,description,epic\n");
+        builder.append("id,type,name,status,description,startTime,duration,endTime,epicID\n");
 
         List<Task> tasks = new ArrayList<Task>();
         tasks.addAll(getTasks());
@@ -135,8 +150,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         for (Task task : tasks) {
             String e = task instanceof SubTask ? String.valueOf(((SubTask) task).getEpicID()) : " ";
 
-            String o = String.format("%d,%s,%s,%s,%s,%s\n",
-                    task.getID(), task.getType(), task.getName(), task.getStatus(), task.getDescription(), e);
+            String o = String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                    task.getID(), task.getType(), task.getName(), task.getStatus(), task.getDescription(),
+                    task.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                    task.getDuration().toSeconds() + "S",
+                    task.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                    e);
             builder.append(o);
         }
         builder.append("\n");
@@ -144,7 +163,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         for (Task task : history) {
             builder.append(task.getID()).append(",");
         }
-        builder.delete(builder.length()-1,builder.length());
+        builder.delete(builder.length() - 1, builder.length());
         return builder.toString();
     }
 
