@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Epic extends Task {
     Map<Long, SubTask> subTasks = new HashMap<>();
@@ -11,6 +12,11 @@ public class Epic extends Task {
     public Epic(String name, String description, LocalDateTime startTime, Duration duration) {
         super(name, description, startTime, duration);
     }
+
+    public Epic(String name, String description) {
+        super(name, description);
+    }
+
     public Epic(String name, String description, LocalDateTime startTime, Duration duration, LocalDateTime endTime, long ID, TaskStatus status) {
         super(name, description, startTime, duration, endTime, ID, status);
     }
@@ -44,6 +50,8 @@ public class Epic extends Task {
         SubTask beforeTask = new SubTask("ST1", "D", LocalDateTime.MAX, Duration.ZERO, 1);
         SubTask afterTask = new SubTask("ST2", "D", LocalDateTime.MIN, Duration.ZERO, 2);
         for (SubTask subTask : subTasks.values()) {
+            if (subTask.getDuration() == null || subTask.getStartTime() == null || subTask.getEndTime() == null)
+                continue;
             duration = duration.plus(subTask.getDuration());
             if (subTask.getStartTime().isBefore(beforeTask.getStartTime())) {
                 beforeTask = subTask;
@@ -52,8 +60,28 @@ public class Epic extends Task {
                 afterTask = subTask;
             }
         }
+        if (beforeTask.getStartTime()==LocalDateTime.MAX && afterTask.getStartTime() == LocalDateTime.MIN) {
+            this.setStartTime(null);
+            this.setDuration(null);
+            this.setEndTime(null);
+            return;
+        }
         this.setStartTime(beforeTask.getStartTime());
         this.setDuration(duration);
-        this.setEndTime(afterTask.getEndTime().plus(afterTask.getDuration()));
+        this.setEndTime(afterTask.getEndTime());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subTasks, epic.subTasks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subTasks);
     }
 }

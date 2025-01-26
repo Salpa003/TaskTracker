@@ -3,22 +3,25 @@ package test.manager;
 import main.Task.Epic;
 import main.Task.SubTask;
 import main.Task.Task;
-import main.Task.TaskStatus;
 import main.manager.Managers;
 import main.manager.TaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class FileBackedTasksManagerTest {
     private TaskManager manager;
+    private LocalDateTime ldt = LocalDateTime.now();
+    private Duration duration = Duration.of(35, ChronoUnit.HOURS);
 
     @BeforeEach
     public void updateManager() {
@@ -32,9 +35,9 @@ public class FileBackedTasksManagerTest {
 
     @Test
     public void readAndWriteToFile() {
-        Task task = new Task("T1","D",1, TaskStatus.NEW);
-        Epic epic = new Epic("E1","D",2,TaskStatus.NEW);
-        SubTask subTask = new SubTask("S1","D",3,TaskStatus.DONE,epic.getID());
+        Task task = new Task("T1", "D");
+        Epic epic = new Epic("E1", "D");
+        SubTask subTask = new SubTask("S1", "D", epic.getID());
 
         manager.addTask(task);
         manager.addEpic(epic);

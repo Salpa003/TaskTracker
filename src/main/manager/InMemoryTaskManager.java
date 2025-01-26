@@ -9,14 +9,10 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     public HistoryManager historyManager = Managers.getDefaultHistory();
-    static long ID = 1;
     private Map<Long, Task> tasks = new HashMap<>();
     private Map<Long, SubTask> subTasks = new HashMap<>();
     private Map<Long, Epic> epics = new HashMap<>();
-
-    public static long generateID() {
-        return ID++;
-    }
+    private final Set<Task> priorityTasks = new TreeSet<>();
 
     public void setTasks(Map<Long, Task> tasks) {
         this.tasks = tasks;
@@ -84,20 +80,28 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addTask(Task task) {
-        // почему закомментировал? в итоговом коде не должны быть закомментированные строки, если не нужны удаляй
+        if (task == null)
+            return;
         tasks.put(task.getID(), task);
+        priorityTasks.add(task);
     }
 
     @Override
     public void addSubTask(SubTask subTask) {
+        Epic epic = epics.get(subTask.getEpicID());
+        if (subTask==null|| epic == null)
+            return;
         subTasks.put(subTask.getID(), subTask);
-        if (epics.get(subTask.getEpicID())!=null)
-        epics.get(subTask.getEpicID()).addSubTask(subTask);
+        priorityTasks.add(subTask);
+        epic.addSubTask(subTask);
     }
 
     @Override
     public void addEpic(Epic epic) {
+        if (epic == null)
+            return;
         epics.put(epic.getID(), epic);
+        priorityTasks.add(epic);
     }
 
     @Override
@@ -126,14 +130,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeTask(long id) {
-        tasks.remove(id);
+      priorityTasks.remove(tasks.remove(id));
         historyManager.remove(id);
     }
 
     @Override
     public void removeSubTask(long id) {
         if (subTasks.containsKey(id)) {
-            subTasks.remove(id);
+            priorityTasks.remove(subTasks.remove(id));
             historyManager.remove(id);
         }
     }
@@ -141,6 +145,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeEpic(long id) {
         Epic epic = epics.remove(id);
+        priorityTasks.remove(epic);
         historyManager.remove(id);
         if (epic == null) return;
 
@@ -197,5 +202,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void addToHistory(Task task) {
         historyManager.add(task);
+    }
+    @Override
+    public Set<Task> getPrioritizedTasks() {
+        return priorityTasks;
     }
 }

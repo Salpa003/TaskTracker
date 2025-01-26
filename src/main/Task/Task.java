@@ -1,12 +1,10 @@
 package main.Task;
 
-import main.manager.InMemoryTaskManager;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Comparable<Task> {
     private String name;
     private String description;
     private long ID;
@@ -19,13 +17,23 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = TaskStatus.NEW;
-        this.ID = InMemoryTaskManager.generateID();
+        this.ID = generateID();
         this.startTime = startTime;
         this.duration = duration;
         this.endTime = startTime.plus(duration);
     }
 
-    public Task(String name, String description,LocalDateTime startTime, Duration duration,
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+        this.startTime = null;
+        this.duration = null;
+        this.endTime = null;
+        this.ID = generateID();
+        this.status = TaskStatus.NEW;
+    }
+
+    public Task(String name, String description, LocalDateTime startTime, Duration duration,
                 LocalDateTime endTime, long ID, TaskStatus status) {
         this.name = name;
         this.description = description;
@@ -84,13 +92,16 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return ID == task.ID && Objects.equals(name, task.name) && Objects.equals(description, task.description)
-                && status == task.status;
+        return this.ID == task.ID && Objects.equals(this.name, task.name)
+                && Objects.equals(this.description, task.description)
+                && this.status == task.status && (duration == null && task.duration == null) ? true : Objects.equals(this.duration, task.duration)
+                && (startTime == null && task.startTime == null) ? true : Objects.equals(this.startTime, task.startTime)
+                && (endTime == null && task.endTime == null) ? true : Objects.equals(this.endTime, task.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, ID, status);
+        return Objects.hash(name, description, ID, status, duration, startTime, endTime);
     }
 
     public Duration getDuration() {
@@ -117,5 +128,20 @@ public class Task {
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    private static long generateID;
+
+    public static long generateID() {
+        return generateID++;
+    }
+
+    @Override
+    public int compareTo(Task o) {
+        if (startTime == null)
+            return 1;
+        if (o.getStartTime() == null)
+            return -1;
+        return startTime.compareTo(o.getStartTime());
     }
 }

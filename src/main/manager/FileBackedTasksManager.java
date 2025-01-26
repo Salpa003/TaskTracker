@@ -45,23 +45,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
                 if (p[1].equals(TaskType.TASK.toString())) {
-                    Task task = new Task(p[2], p[4], LocalDateTime.parse(p[5],
+                    Task task = new Task(p[2], p[4],p[5].equals("null")?null: LocalDateTime.parse(p[5],
                             DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
-                            Duration.ofSeconds(Long.parseLong(p[6].substring(0,p[6].length()-1))), LocalDateTime.parse(p[7],
+                            p[6].equals("null")?null:  Duration.ofSeconds(Long.parseLong(p[6].substring(0, p[6].length() - 1))),
+                            p[7].equals("null")?null:LocalDateTime.parse(p[7],
                             DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
                             Long.parseLong(p[0]), TaskStatus.valueOf(p[3]));
                     tasks.put(task.getID(), task);
                 } else if (p[1].equals(TaskType.SUBTASK.toString())) {
-                    SubTask subTask = new SubTask(p[2], p[4], LocalDateTime.parse(p[5],
+                    SubTask subTask = new SubTask(p[2], p[4],p[5].equals("null")?null: LocalDateTime.parse(p[5],
                             DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
-                            Duration.ofSeconds(Long.parseLong(p[6].substring(0,p[6].length()-1))), LocalDateTime.parse(p[7],
+                            p[6].equals("null")?null: Duration.ofSeconds(Long.parseLong(p[6].substring(0, p[6].length() - 1))),
+                            p[7].equals("null")?null:LocalDateTime.parse(p[7],
                             DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
                             Long.parseLong(p[0]), TaskStatus.valueOf(p[3]), Long.parseLong(p[8]));
                     subTasks.put(subTask.getID(), subTask);
                 } else if (p[1].equals(TaskType.EPIC.toString())) {
-                    Epic epic = new Epic(p[2], p[4], LocalDateTime.parse(p[5],
+                    Epic epic = new Epic(p[2], p[4],p[5].equals("null")?null: LocalDateTime.parse(p[5],
                             DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
-                            Duration.ofSeconds(Long.parseLong(p[6].substring(0,p[6].length()-1))), LocalDateTime.parse(p[7],
+                            p[6].equals("null")?null:   Duration.ofSeconds(Long.parseLong(p[6].substring(0, p[6].length() - 1))),
+                            p[7].equals("null")?null:LocalDateTime.parse(p[7],
                             DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
                             Long.parseLong(p[0]), TaskStatus.valueOf(p[3]));
                     epics.put(epic.getID(), epic);
@@ -152,9 +155,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
             String o = String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s\n",
                     task.getID(), task.getType(), task.getName(), task.getStatus(), task.getDescription(),
-                    task.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
-                    task.getDuration().toSeconds() + "S",
-                    task.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                    task.getStartTime() == null ? null : task.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
+                    task.getDuration() == null ? null : task.getDuration().toSeconds() + "S",
+                    task.getEndTime() == null ? null : task.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm d.M.yyyy")),
                     e);
             builder.append(o);
         }

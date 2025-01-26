@@ -6,6 +6,7 @@ import main.Task.Task;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface TaskManager {
      List<Task> getTasks(); // по умолчанию в interface методы public можно не указывать
@@ -29,4 +30,5 @@ public interface TaskManager {
      List<SubTask> getSubTasksWithEpicID(long id);
      void updateEpicStatus(Epic epic);
      List<Task> getHistory();
+     Set<Task> getPrioritizedTasks();
 }
