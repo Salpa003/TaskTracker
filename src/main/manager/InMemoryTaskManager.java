@@ -1,10 +1,8 @@
 package main.manager;
 
-import main.Task.Epic;
-import main.Task.SubTask;
-import main.Task.Task;
-import main.Task.TaskStatus;
+import main.Task.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -206,5 +204,28 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Set<Task> getPrioritizedTasks() {
         return priorityTasks;
+    }
+
+    @Override
+    public List<Task> findAndFixIntersectionTasksByTime() {
+        List<Task> intersectionTasks = new ArrayList<>();
+
+        Task lastTask = null;
+        for (Task task : getPrioritizedTasks()) {
+            if (task.getStartTime() == null || task.getEndTime() == null) {
+                continue;
+            }
+            if (lastTask != null && lastTask.getEndTime() != null) {
+                if (lastTask.getEndTime().isAfter(task.getStartTime())||lastTask.getEndTime().isEqual(task.getStartTime())) {
+                    intersectionTasks.add(lastTask);
+                    intersectionTasks.add(task);
+                    LocalDateTime newStartTime = lastTask.getEndTime().plusMinutes(15);
+                    task.setStartTime(newStartTime);
+                    task.setEndTime(newStartTime.plus(task.getDuration()));
+                }
+            }
+            lastTask = task;
+        }
+        return  new ArrayList<>(new LinkedHashSet<>(intersectionTasks));
     }
 }

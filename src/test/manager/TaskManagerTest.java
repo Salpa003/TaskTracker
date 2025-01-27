@@ -1,12 +1,8 @@
 package test.manager;
 
-import main.Task.Epic;
-import main.Task.SubTask;
-import main.Task.Task;
-import main.Task.TaskStatus;
+import main.Task.*;
 import main.manager.Managers;
 import main.manager.TaskManager;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +13,9 @@ import java.io.Writer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class TaskManagerTest {
     private TaskManager taskManager;
@@ -46,7 +42,7 @@ class TaskManagerTest {
 
         List<Task> expectedList = List.of(task1, task2);
         List<Task> actualList = taskManager.getTasks();
-        Assertions.assertIterableEquals(expectedList, actualList);
+        assertIterableEquals(expectedList, actualList);
     }
 
     @Test
@@ -61,7 +57,7 @@ class TaskManagerTest {
 
         List<SubTask> expectedList = List.of(subTask1, subTask2);
         List<SubTask> actualList = taskManager.getSubTasks();
-        Assertions.assertIterableEquals(expectedList, actualList);
+        assertIterableEquals(expectedList, actualList);
     }
 
     @Test
@@ -74,7 +70,7 @@ class TaskManagerTest {
 
         List<Epic> expectedList = List.of(epic1, epic2);
         List<Epic> actualList = taskManager.getEpics();
-        Assertions.assertIterableEquals(expectedList, actualList);
+        assertIterableEquals(expectedList, actualList);
     }
 
     @Test
@@ -86,7 +82,7 @@ class TaskManagerTest {
         taskManager.addTask(task2);
         taskManager.removeAllTasks();
 
-        Assertions.assertTrue(taskManager.getTasks().isEmpty());
+        assertTrue(taskManager.getTasks().isEmpty());
     }
 
     @Test
@@ -98,7 +94,7 @@ class TaskManagerTest {
         taskManager.addSubTask(task2);
         taskManager.removeAllSubtasks();
 
-        Assertions.assertTrue(taskManager.getSubTasks().isEmpty());
+        assertTrue(taskManager.getSubTasks().isEmpty());
     }
 
     @Test
@@ -110,7 +106,7 @@ class TaskManagerTest {
         taskManager.addEpic(epic2);
         taskManager.removeAllEpics();
 
-        Assertions.assertTrue(taskManager.getEpics().isEmpty());
+        assertTrue(taskManager.getEpics().isEmpty());
     }
 
     @Test
@@ -120,9 +116,9 @@ class TaskManagerTest {
         taskManager.addTask(expectedTask);
         Optional<Task> actualTask = taskManager.getTask(expectedTask.getID());
         Optional<Task> emptyTask = taskManager.getTask(-1);
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(expectedTask, actualTask.get()),
-                () -> Assertions.assertTrue(emptyTask.isEmpty())
+        assertAll(
+                () -> assertEquals(expectedTask, actualTask.get()),
+                () -> assertTrue(emptyTask.isEmpty())
         );
     }
 
@@ -135,9 +131,9 @@ class TaskManagerTest {
         taskManager.addSubTask(expectedSubTask);
         Optional<SubTask> actualSubTask = taskManager.getSubTask(expectedSubTask.getID());
         Optional<SubTask> emptySubTask = taskManager.getSubTask(-1);
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(expectedSubTask, actualSubTask.get()),
-                () -> Assertions.assertTrue(emptySubTask.isEmpty())
+        assertAll(
+                () -> assertEquals(expectedSubTask, actualSubTask.get()),
+                () -> assertTrue(emptySubTask.isEmpty())
         );
     }
 
@@ -148,9 +144,9 @@ class TaskManagerTest {
         taskManager.addEpic(expectedEpic);
         Optional<Epic> actualEpic = taskManager.getEpic(expectedEpic.getID());
         Optional<Epic> emptyEpic = taskManager.getEpic(-1);
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(expectedEpic, actualEpic.get()),
-                () -> Assertions.assertTrue(emptyEpic.isEmpty())
+        assertAll(
+                () -> assertEquals(expectedEpic, actualEpic.get()),
+                () -> assertTrue(emptyEpic.isEmpty())
         );
     }
 
@@ -166,7 +162,7 @@ class TaskManagerTest {
         expectedTask.setID(task.getID());
         expectedTask.setStatus(TaskStatus.DONE);
 
-        Assertions.assertEquals(expectedTask, taskManager.getTask(task.getID()).get());
+        assertEquals(expectedTask, taskManager.getTask(task.getID()).get());
     }
 
     @Test
@@ -181,7 +177,7 @@ class TaskManagerTest {
         taskManager.updateSubTask(subTask);
         expectedSubTask.setID(subTask.getID());
 
-        Assertions.assertEquals(expectedSubTask, taskManager.getSubTask(subTask.getID()).get());
+        assertEquals(expectedSubTask, taskManager.getSubTask(subTask.getID()).get());
     }
 
     @Test
@@ -196,7 +192,7 @@ class TaskManagerTest {
         expectedEpic.setID(epic.getID());
         expectedEpic.setStatus(TaskStatus.DONE);
 
-        Assertions.assertEquals(expectedEpic, taskManager.getEpic(epic.getID()).get());
+        assertEquals(expectedEpic, taskManager.getEpic(epic.getID()).get());
     }
 
     @Test
@@ -208,8 +204,8 @@ class TaskManagerTest {
         taskManager.addTask(task2);
         taskManager.removeTask(task1.getID());
 
-        Assertions.assertTrue(taskManager.getTask(task2.getID()).isPresent());
-        Assertions.assertTrue(taskManager.getTask(task1.getID()).isEmpty());
+        assertTrue(taskManager.getTask(task2.getID()).isPresent());
+        assertTrue(taskManager.getTask(task1.getID()).isEmpty());
     }
 
     @Test
@@ -223,8 +219,8 @@ class TaskManagerTest {
         taskManager.addSubTask(task2);
         taskManager.removeSubTask(task1.getID());
 
-        Assertions.assertTrue(taskManager.getSubTask(task2.getID()).isPresent());
-        Assertions.assertTrue(taskManager.getSubTask(task1.getID()).isEmpty());
+        assertTrue(taskManager.getSubTask(task2.getID()).isPresent());
+        assertTrue(taskManager.getSubTask(task1.getID()).isEmpty());
     }
 
     @Test
@@ -236,8 +232,8 @@ class TaskManagerTest {
         taskManager.addEpic(task2);
         taskManager.removeEpic(task1.getID());
 
-        Assertions.assertTrue(taskManager.getEpic(task2.getID()).isPresent());
-        Assertions.assertTrue(taskManager.getEpic(task1.getID()).isEmpty());
+        assertTrue(taskManager.getEpic(task2.getID()).isPresent());
+        assertTrue(taskManager.getEpic(task1.getID()).isEmpty());
     }
 
     @Test
@@ -254,7 +250,7 @@ class TaskManagerTest {
         List<SubTask> expectedList = List.of(subTask2, subTask1);
         List<SubTask> actualList = taskManager.getSubTasksWithEpicID(epic.getID());
 
-        Assertions.assertTrue(actualList.containsAll(expectedList));
+        assertTrue(actualList.containsAll(expectedList));
     }
 
     @Test
@@ -267,23 +263,23 @@ class TaskManagerTest {
         taskManager.addSubTask(subTask1);
         taskManager.addSubTask(subTask2);
         taskManager.updateEpicStatus(epic);
-        Assertions.assertEquals(TaskStatus.NEW, epic.getStatus());
+        assertEquals(TaskStatus.NEW, epic.getStatus());
 
         subTask1.setStatus(TaskStatus.IN_PROGRESS);
         taskManager.updateEpicStatus(epic);
-        Assertions.assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
 
         subTask1.setStatus(TaskStatus.DONE);
         taskManager.updateEpicStatus(epic);
-        Assertions.assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
 
         subTask2.setStatus(TaskStatus.IN_PROGRESS);
         taskManager.updateEpicStatus(epic);
-        Assertions.assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
 
         subTask2.setStatus(TaskStatus.DONE);
         taskManager.updateEpicStatus(epic);
-        Assertions.assertEquals(TaskStatus.DONE, epic.getStatus());
+        assertEquals(TaskStatus.DONE, epic.getStatus());
     }
 
     @Test
@@ -300,7 +296,7 @@ class TaskManagerTest {
         taskManager.addSubTask(subTask1);
         taskManager.addSubTask(subTask2);
 
-        Assertions.assertTrue(taskManager.getHistory().isEmpty());
+        assertTrue(taskManager.getHistory().isEmpty());
 
         taskManager.getEpic(epic.getID());
         taskManager.getTask(task2.getID());
@@ -310,7 +306,7 @@ class TaskManagerTest {
 
         List<Task> expectedList = List.of(epic, task2, subTask2, task1, subTask1);
         List<Task> actualList = taskManager.getHistory();
-        Assertions.assertIterableEquals(expectedList, actualList);
+        assertIterableEquals(expectedList, actualList);
     }
 
     @Test
@@ -327,9 +323,9 @@ class TaskManagerTest {
 
         LocalDateTime end = task.getStartTime().plus(task.getDuration());
 
-        Assertions.assertEquals(end, task.getEndTime());
-        Assertions.assertEquals(end, subTask.getEndTime());
-        Assertions.assertEquals(end, epic.getEndTime());
+        assertEquals(end, task.getEndTime());
+        assertEquals(end, subTask.getEndTime());
+        assertEquals(end, epic.getEndTime());
     }
 
     @Test
@@ -350,8 +346,8 @@ class TaskManagerTest {
         LocalDateTime start = subTask1.getStartTime();
         LocalDateTime end = subTask2.getEndTime();
 
-        Assertions.assertEquals(start, epic.getStartTime());
-        Assertions.assertEquals(end, epic.getEndTime());
+        assertEquals(start, epic.getStartTime());
+        assertEquals(end, epic.getEndTime());
     }
 
     @Test
@@ -363,9 +359,9 @@ class TaskManagerTest {
         Epic epic = new Epic("Epic", "D",
                 LocalDateTime.of(2025, 1, 7, 12, 0, 0), Duration.ZERO);
         SubTask subTask = new SubTask("SubTask", "D",
-            LocalDateTime.of(2025, 1, 14, 12, 0, 0), Duration.ZERO, epic.getID());
+                LocalDateTime.of(2025, 1, 14, 12, 0, 0), Duration.ZERO, epic.getID());
         SubTask subTask2 = new SubTask("SubTask2", "DD",
-            LocalDateTime.of(2025, 1, 1, 12, 1, 0), Duration.ZERO, epic.getID());
+                LocalDateTime.of(2025, 1, 1, 12, 1, 0), Duration.ZERO, epic.getID());
 
         taskManager.addTask(task);
         taskManager.addTask(task2);
@@ -373,9 +369,55 @@ class TaskManagerTest {
         taskManager.addSubTask(subTask);
         taskManager.addSubTask(subTask2);
 
-        List<Task> expectedSet = List.of(subTask2,epic,task, subTask, task2);
+        List<Task> expectedSet = List.of(subTask2, epic, task, subTask, task2);
         Set<Task> actualSet = taskManager.getPrioritizedTasks();
 
-        Assertions.assertIterableEquals(expectedSet, actualSet);
+        assertIterableEquals(expectedSet, actualSet);
+    }
+
+    @Test
+    void findIntersectionTasksByTime() {
+        Task task = new Task("Task", "D",
+                LocalDateTime.of(1, 1, 1, 0, 0, 0), Duration.ofDays(7));
+        Task task2 = new Task("Task2", "D",
+                LocalDateTime.of(1, 1, 2, 0, 0, 0), Duration.ofDays(2));
+        Epic epic = new Epic("Epic", "D",
+                LocalDateTime.of(1, 1, 11, 0, 0, 1), Duration.ZERO);
+
+
+        taskManager.addTask(task);
+        taskManager.addTask(task2);
+        taskManager.addEpic(epic);
+
+        List<Task> expectedList = List.of(task, task2);
+        List<Task> actualList = taskManager.findAndFixIntersectionTasksByTime();
+
+        System.out.println(expectedList);
+        System.out.println(actualList);
+        assertIterableEquals(expectedList, actualList );
+    }
+
+    @Test
+    void fixIntersectionTasks() {
+        Task task1 = new Task("Task1", "D",
+                LocalDateTime.of(1, 1, 1, 12, 0, 0),
+                Duration.of(2, ChronoUnit.DAYS));
+        Task task2 = new Epic("Task2", "D",
+                LocalDateTime.of(1, 1, 2, 1, 0, 0),
+                Duration.of(10, ChronoUnit.HOURS));
+        Task task3 = new Task("Task3", "D",
+                LocalDateTime.of(1, 1, 3, 1, 0, 0),
+                Duration.of(2, ChronoUnit.DAYS));
+        Task task4 = new Epic("Task4", "D");
+
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskManager.addTask(task3);
+        taskManager.addTask(task4);
+
+        taskManager.findAndFixIntersectionTasksByTime();
+
+        assertEquals(task2.getStartTime(), task1.getEndTime().plusMinutes(15));
+        assertEquals(task3.getStartTime(), task2.getEndTime().plusMinutes(15));
     }
 }
